@@ -34,8 +34,8 @@ const newProject = async (req, res) => {
 }
 const addCollaborateur = async (req, res) => {
     try {
-        const {email, _id} = req.body
-        if (!email || !_id)
+        const {email, _id, creatorId} = req.body
+        if (!email || !_id || !creatorId)
             return res.status(400).json({message: 'Please provide the information requested'})
 
         const existingUser = await User.findOne({email})
@@ -44,24 +44,16 @@ const addCollaborateur = async (req, res) => {
         
         const existingProject = await Project.findByIdAndUpdate(_id, 
             {$addToSet: {teamMember: existingUser._id}},
-            {new: true}
+            {returnDocument: 'after'}
         )
         if(!existingProject)
             return res.status(404).json({message: "The project doesn't exist"})
         
-        res.json(existingProject)
-        // const projectMember = [...existingProject.teamMember]
-        
-        // const idUser = await existingUser._id.toHexString()
-        
-        // projectMember.push(idUser)
-        // console.log(projectMember)
-        // const updateProject= await existingProject.updateOne(
-        //     {_id},
-        //     {$set: }
-        // )
-        // const updateProject= await existingProject.save(projectMember)
-        // res.json(updateProject)
+        if(existingProject.creatorId === creatorId){
+            res.json(existingProject)
+        } else{
+            res.status(401).json({message: 'Not authorized to do this'})
+        }
     } catch (err) {
         res.status(500).json({message: "Server error during registration of the project", error: err.message})
     }

@@ -6,11 +6,13 @@ require('./config/db')
 
 const authRoute = require('./routes/authRoutes')
 const projectRoute = require('./routes/projectRoutes')
+const userRoutes = require('./routes/userRoutes')
 
 app.use(express.json())
 
 app.use('/api/v1/auth', authRoute)
 app.use('/api/v1/projects', projectRoute)
+app.use('/api/v1/user', userRoutes)
 app.get('/', (req, res) =>{
     res.send('Bienvenue sur mon API RESTful !')
 })
