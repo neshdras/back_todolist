@@ -18,13 +18,14 @@ const register = async (req, res) => {
 
         const existingUser = await User.findOne({email})
         if(existingUser)
-            return res.status(400).json({message: 'Email already user'})
+            return res.status(400).json({message: 'Email already use'})
 
         const user = await User.create({
             name,
             email,
             password,
-            role: role || 'user'
+            role: role || 'user',
+            project: []
         })
         const token = generateToken(user._id)
         res.status(201).json({
