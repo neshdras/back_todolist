@@ -16,10 +16,12 @@ const getProject = async (req, res) => {
         const objectId = new mongoose.Types.ObjectId(id) 
         
         const projects = await Project.find()
-
+        
         projects.forEach(project => {
             if(project.teamMember.includes(objectId))
                 userProject.push(project)
+            else if(project.creatorId === id)
+                userProject.push(project)            
         });
         
         if(userProject.length >0)
