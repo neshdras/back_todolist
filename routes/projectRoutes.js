@@ -1,8 +1,9 @@
 const express = require('express')
 const router = express.Router()
-const {newProject, addCollaborateur} = require('../controllers/projectController')
+const {newProject, addCollaborateur, addTask, taskStatus} = require('../controllers/projectController')
+const authMiddleware = require('../middleware/authMiddleware')
 
-router.post('/new', newProject)
-router.patch('/collaborateur', addCollaborateur)
+router.post('/new', authMiddleware, newProject)
+router.patch('/collaborateur', authMiddleware, addCollaborateur)
 
 module.exports = router

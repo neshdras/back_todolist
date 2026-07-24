@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const Task = require('./taskModel')
 
 const projectSchema = new mongoose.Schema(
     {
@@ -16,7 +17,8 @@ const projectSchema = new mongoose.Schema(
             required: true
         },
         task: {
-            type: Array,
+            type: [mongoose.ObjectID],
+            ref: 'Task',
             required: false,
         },
         teamMember:{

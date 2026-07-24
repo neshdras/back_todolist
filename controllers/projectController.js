@@ -58,4 +58,6 @@ const addCollaborateur = async (req, res) => {
         res.status(500).json({message: "Server error during registration of the project", error: err.message})
     }
 }
+
+
 module.exports = {newProject, addCollaborateur}

@@ -20,6 +20,22 @@ const register = async (req, res) => {
         if(existingUser)
             return res.status(400).json({message: 'Email already use'})
 
+                const isPasswordOk = validator.isStrongPassword(password, {
+            minLength: 6,
+            minLowercase: 1,
+            minUppercase: 1,
+            minNumbers: 1,
+            minSymbols: 1
+        }) 
+        if(!isPasswordOk)
+            return res.status(400).json({ message: 'Paswword must have 1 lower, 1 upper, 1 number and 1 symbol and must be at least 6characters long'})
+
+        const isEmailOk = validator.isEmail(email)
+
+        if(!isEmailOk)
+            return res.status(400).json({message: 'you must provide a valid email'})
+        
+
         const user = await User.create({
             name,
             email,

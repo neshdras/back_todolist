@@ -1,6 +1,7 @@
-// const User = require('../models/userModel')
+
 const Project = require('../models/projectModel')
 const {mongoose} = require('mongoose')
+
 const profile = async (req, res) => {
     try {
         res.status(200).json({user: req.user})
