@@ -6,6 +6,6 @@ const authMiddleware = require("../middleware/authMiddleware")
 router.post('/', authMiddleware, addTask)
 router.patch('/human', authMiddleware, addHumanTask)
 router.patch('/status', authMiddleware, taskStatus)
-router.get('/filter/status',authMiddleware, filterStatus)
+router.get('/filter/status', authMiddleware, filterStatus)
 router.get('/filter/user', authMiddleware, filterUser)
 module.exports = router

@@ -27,7 +27,7 @@ const addTask = async (req, res) => {
         if(existingProject.teamMember.includes(userObject) || existingProject.creatorId === idUser )
             res.status(201).json(existingProject)
         else
-            res.statut(401).json({message: 'Not authorized to do this'})
+            res.status(401).json({message: 'Not authorized to do this'})
 
 
     } catch (err) {
@@ -45,8 +45,7 @@ const taskStatus = async (req, res) => {
     if(status != "To do" && status != "Doing" && status != "Done")
         return res.status(400).json({message: "Status is not valid"})
 
-    const existingTask = await Task.findById(_id
-    )
+    const existingTask = await Task.findById(_id)
     if(!existingTask)
         return res.status(404).json({message: "This task doesn't exist"})
 
@@ -74,8 +73,7 @@ const addHumanTask = async (req, res) =>{
 
 const filterStatus = async (req, res) => {
     const { idProject, status} = req.body
-    const taskProject= []
-    const taskFiltered= []
+
 
     if(!idProject || !status)
         return res.status(400).json({message: "Please provide the information"})
@@ -88,20 +86,11 @@ const filterStatus = async (req, res) => {
     if(!existingProject)
         return res.status(404).json({message: "Project doesn't exist"})
 
-    const tasks = existingProject.task
-    for (const task of tasks) {
-        const id = task._id
-        
-        const haveOne = await Task.find(id)
-        if(haveOne)
-            taskProject.push(haveOne[0])
-    }
-
-
-    taskProject.forEach(task => {
-        if(task.status === status)
-            taskFiltered.push(task)
+    const taskFiltered = await Task.find({
+        _id:{$in: existingProject.task},
+        status
     })
+
     res.status(200).json({
         status,
         task: taskFiltered
@@ -110,44 +99,38 @@ const filterStatus = async (req, res) => {
 }
 
 const filterUser = async (req, res) => {
-        const { idProject, idUser} = req.body
-    const taskProject= []
-    const taskFiltered= []
+    try {
+        const { idProject, idUser } = req.body
 
-    if(!idProject || !idUser)
-        return res.status(400).json({message: "Please provide the information"})
+        if (!idProject || !idUser) {
+            return res.status(400).json({ message: "Please provide the information" })
+        }
 
+        const existingProject = await Project.findById(idProject)
+        if (!existingProject) {
+            return res.status(404).json({ message: "Project doesn't exist" })
+        }
 
+        const isCollaborator = existingProject.teamMember.some(
+            memberId => memberId.toString() === idUser
+        )
 
-    const existingProject = await Project.findById(idProject)
-    if(!existingProject)
-        return res.status(404).json({message: "Project doesn't exist"})
+        if (!isCollaborator) {
+            return res.status(400).json({ message: "This user isn't member of the project" })
+        }
 
-    const existingUser = await User.findById(idUser)
-    if(!existingUser)
-        return res.status(404).json({message: "User doesn't exist"})
+        const taskFiltered = await Task.find({
+            _id: { $in: existingProject.task }, 
+            human: idUser                      
+        })
 
-    const collaborators = existingProject.teamMember
-    if (!collaborators.includes(idUser))
-        return res.status(400).json({message: "This user isn't memeber of the project"})
+        return res.status(200).json({
+            user: idUser,
+            task: taskFiltered
+        })
 
-    const tasks = existingProject.task
-    for (const task of tasks) {
-        const id = task._id
-        
-        const haveOne = await Task.find(id)
-        if(haveOne)
-            taskProject.push(haveOne[0])
+    } catch (err) {
+        return res.status(500).json({ message: "Server error", error: err.message })
     }
-
-
-    taskProject.forEach(task => {
-        if(task.human === idUser)
-            taskFiltered.push(task)
-    })
-    res.status(200).json({
-        user: idUser,
-        task: taskFiltered
-    })
 }
 module.exports = {addTask, taskStatus, addHumanTask, filterStatus, filterUser}

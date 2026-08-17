@@ -2,6 +2,8 @@ const jwt = require('jsonwebtoken')
 const User = require('../models/userModel')
 const JWT_SECRET = process.env.JWT_SECRET
 const JWT_EXPIRE_IN = '24h'
+const validator = require('validator')
+
 
 const generateToken = (id) => {
     return jwt.sign({id}, JWT_SECRET, {
@@ -68,7 +70,7 @@ const login = async (req, res) => {
 
         const user = await User.findOne({email}).select('+password')
         if(!user)
-            return res.stauts(400).json({message: 'Invalid credentials'})
+            return res.status(400).json({message: 'Invalid credentials'})
 
         const isMatch = await user.comparePassword(password)
         if(!isMatch)

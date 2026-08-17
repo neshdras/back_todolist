@@ -21,10 +21,11 @@ const projectSchema = new mongoose.Schema(
             ref: 'Task',
             required: false,
         },
-        teamMember:{
-            type: Array,
-            required: false
-        }
+        teamMember:[{
+            type: mongoose.Schema.Types.ObjectId,
+            required: false,
+            ref: 'Users'
+        }]
     },
     {
         timestamps: true,
